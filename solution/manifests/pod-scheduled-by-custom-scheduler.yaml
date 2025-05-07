@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-scheduled-by-custom-scheduler
+  namespace: default
+spec:
+  schedulerName: custom
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
