@@ -1,4 +1,4 @@
-import requests.status_codes
+import requests
 
 
 def schedule_pod(
