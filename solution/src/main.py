@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 from random import choice
 
 import kubernetes
@@ -9,9 +8,8 @@ from schedule_pod import schedule_pod
 
 def load_config():
     configuration = kubernetes.client.Configuration()
-    if kubeconfig := os.getenv('KUBECONFIG'):
-        kubeconfig = Path(kubeconfig)
-    if kubeconfig is not None and kubeconfig.exists() and kubeconfig.is_file():
+    kubeconfig = os.getenv('KUBECONFIG')
+    if kubeconfig is not None and os.path.isfile(kubeconfig):
         kubernetes.config.load_kube_config(client_configuration=configuration)
     else:
         kubernetes.config.load_incluster_config(client_configuration=configuration)
