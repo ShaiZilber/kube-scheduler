@@ -1,11 +1,9 @@
 import os
 from pathlib import Path
 from random import choice
-from typing import Iterable
 
 import kubernetes.client
 from kubernetes import client, watch, config
-from kubernetes.client import V1Node, V1NodeSpec, V1PodSpec, V1NodeList, V1NodeSelector
 
 from schedule_pod import schedule_pod
 
