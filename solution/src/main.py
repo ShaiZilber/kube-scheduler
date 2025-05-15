@@ -2,20 +2,19 @@ import os
 from pathlib import Path
 from random import choice
 
-import kubernetes.client
-from kubernetes import client, watch, config
+import kubernetes
 
 from schedule_pod import schedule_pod
 
 
 def load_config():
-    configuration = client.Configuration()
+    configuration = kubernetes.client.Configuration()
     if kubeconfig := os.getenv('KUBECONFIG'):
         kubeconfig = Path(kubeconfig)
     if kubeconfig is not None and kubeconfig.exists() and kubeconfig.is_file():
-        config.load_kube_config(client_configuration=configuration)
+        kubernetes.config.load_kube_config(client_configuration=configuration)
     else:
-        config.load_incluster_config(client_configuration=configuration)
+        kubernetes.config.load_incluster_config(client_configuration=configuration)
     return configuration
 
 
@@ -27,8 +26,8 @@ def select_node(v1: kubernetes.client.CoreV1Api, pod: kubernetes.client.V1Pod) -
 def main():
     configuration = load_config()
 
-    v1 = client.CoreV1Api(client.ApiClient(configuration))
-    w = watch.Watch()
+    v1 = kubernetes.client.CoreV1Api(kubernetes.client.ApiClient(configuration))
+    w = kubernetes.watch.Watch()
 
     print("Watching pods in all namespaces...", flush=True)
     for event in w.stream(
