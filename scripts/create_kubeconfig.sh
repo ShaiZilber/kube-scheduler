@@ -58,7 +58,8 @@ clusters:
 - name: $CLUSTER_NAME
   cluster:
     server: $CLUSTER_ENDPOINT
-    certificate-authority-data: $CA_CRT
+    certificate-authority-data: |
+      $(echo $CA_CRT | perl -pe 's/ /\n      /g')
 users:
 - name: $SA_NAME
   user:
