@@ -4,6 +4,7 @@ from random import choice
 import kubernetes
 
 from schedule_pod import schedule_pod
+from solution.src.taints_and_tolerations import tolerates
 
 
 def load_config():
@@ -17,8 +18,14 @@ def load_config():
 
 
 def select_node(v1: kubernetes.client.CoreV1Api, pod: kubernetes.client.V1Pod) -> kubernetes.client.V1Node:
-    nodes = v1.list_node().items
-    return choice(nodes)
+    filtered_nodes = []
+    for node in v1.list_node().items:
+        # Advanced Step 3
+        if not(tolerates(node, pod)):
+            continue
+
+        filtered_nodes.append(node)
+    return choice(filtered_nodes)
 
 
 def main():

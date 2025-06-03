@@ -1,0 +1,160 @@
+---
+# Expected to run
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a3-correct-equal-tolerations
+  namespace: default
+spec:
+  schedulerName: custom
+  tolerations:
+    - key: "taint"
+      value: "true"
+      effect: "NoSchedule"
+      operator: "Equal"
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to run
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a3-correct-exists-tolerations
+  namespace: default
+spec:
+  schedulerName: custom
+  tolerations:
+    - key: "taint"
+      effect: "NoSchedule"
+      operator: "Exists"
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to be pending
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a3-incorrect-exist-tolerations-key
+  namespace: default
+spec:
+  schedulerName: custom
+  tolerations:
+    - key: "no-taint"
+      effect: "NoSchedule"
+      operator: "Exists"
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to be pending
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a3-incorrect-equal-tolerations-key
+  namespace: default
+spec:
+  schedulerName: custom
+  tolerations:
+    - key: "no-taint"
+      value: "true"
+      effect: "NoSchedule"
+      operator: "Equal"
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to be pending
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a3-incorrect-equal-tolerations-value
+  namespace: default
+spec:
+  schedulerName: custom
+  tolerations:
+    - key: "taint"
+      value: "false"
+      effect: "NoSchedule"
+      operator: "Equal"
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to run
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a3-empty-tolerations-key
+  namespace: default
+spec:
+  schedulerName: custom
+  tolerations:
+    - effect: "NoSchedule"
+      operator: "Exists"
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to run
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a3-empty-tolerations-effect
+  namespace: default
+spec:
+  schedulerName: custom
+  tolerations:
+    - key: "taint"
+      value: "true"
+      operator: "Equal"
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to run
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a3-empty-tolerations
+  namespace: default
+spec:
+  schedulerName: custom
+  tolerations:
+    - operator: "Exists"
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"

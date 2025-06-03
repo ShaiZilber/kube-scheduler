@@ -18,3 +18,10 @@
 7. [Schedule based on Node Resource usage.](./docs/steps/node_resource_usage.md)
 8. [Schedule based on Quality of Service.](./docs/steps/quality_of_service.md)
 9. [Schedule based on Pod Topology Spread Constraints.](./docs/steps/pod_topology_spread_constraints.md)
+
+## Points of Interest
+* Clean (Enough) Code:
+  * Separate code into functions to ease readability.
+  * (Optional) Separate code into files to ease readability.
+* Tested Code:
+  * Code should be well-tested and include test case manifests with the explanation of a desired outcome from applying it.
