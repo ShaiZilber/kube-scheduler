@@ -1,7 +1,7 @@
 # Schedule based on Preferred Node Affinity
 
 ## Introduction
-Implement weighted preferences: Pods can list desirable node characteristics with weights, and the scheduler should score and pick the node with the highest total “preference” score.
+Implement weighted preferences: Pods can list desirable node characteristics with weights, and the scheduler pick the node with the highest total “preference” score.
 
 ## Requirements
 
