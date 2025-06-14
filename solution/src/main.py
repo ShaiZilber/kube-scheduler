@@ -5,11 +5,12 @@ import kubernetes
 
 from schedule_pod import schedule_pod
 from solution.src.taints_and_tolerations import tolerates
+from solution.src.node_selecor import node_selector_filter
 
 
 def load_config():
     configuration = kubernetes.client.Configuration()
-    kubeconfig = os.getenv('KUBECONFIG')
+    kubeconfig = os.getenv("KUBECONFIG")
     if kubeconfig is not None and os.path.isfile(kubeconfig):
         kubernetes.config.load_kube_config(client_configuration=configuration)
     else:
@@ -17,14 +18,25 @@ def load_config():
     return configuration
 
 
-def select_node(v1: kubernetes.client.CoreV1Api, pod: kubernetes.client.V1Pod) -> kubernetes.client.V1Node:
+def select_node(
+        v1: kubernetes.client.CoreV1Api, pod: kubernetes.client.V1Pod
+) -> kubernetes.client.V1Node:
     filtered_nodes = []
     for node in v1.list_node().items:
+        # Advanced Step 1
+        if not (node_selector_filter(node, pod)):
+            continue
+
         # Advanced Step 3
-        if not(tolerates(node, pod)):
+        if not (tolerates(node, pod)):
             continue
 
         filtered_nodes.append(node)
+
+    # if no node matches return None
+    if not filtered_nodes:
+        return None
+
     return choice(filtered_nodes)
 
 
@@ -42,15 +54,19 @@ def main():
             continue
 
         node = select_node(v1, event["object"])
+        if node is None:
+            print(f"No node matches pod: {event["object"].metadata.name}")
+            continue
+
         print(
-            node,
+            node.metadata.labels["node.id"],
             schedule_pod(
                 pod=event["object"].metadata.name,
                 namespace=event["object"].metadata.namespace,
                 node=node.metadata.name,
                 api_url=configuration.host,
                 api_token=configuration.get_api_key_with_prefix("authorization"),
-            ).json(),
+            ).status_code,
             flush=True,
         )
 

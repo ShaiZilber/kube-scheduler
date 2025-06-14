@@ -3,6 +3,15 @@ kind: Cluster
 name: scheduler
 nodes:
   - role: control-plane
+    labels:
+      node.id: node0
   - role: worker
+    labels:
+      node.id: node1
   - role: worker
+    labels:
+      node.id: node2
   - role: worker
+    labels:
+      node.id: node3
+

@@ -1,0 +1,109 @@
+---
+# Expected to run
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a1-no-node-selector
+  namespace: default
+spec:
+  schedulerName: custom
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to run on control plane node
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a1-control-plane-two-labels
+  namespace: default
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+    node.id: "node0"
+  schedulerName: custom
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to run on control plane node
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a1-control-plane-one-label
+  namespace: default
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+  schedulerName: custom
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to be pending
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a1-both-labels-dont-exist-on-same-node
+  namespace: default
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+    node.id: "node1"
+  schedulerName: custom
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to be pending
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a1-single-label-doesnt-exist
+  namespace: default
+spec:
+  nodeSelector:
+    node.id: "doesnt-exist"
+  schedulerName: custom
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
+---
+# Expected to be pending
+apiVersion: v1
+kind: Pod
+metadata:
+  name: a1-one-label-exist-one-label-doenst-exist
+  namespace: default
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+    node.id: "doesntExist"
+  schedulerName: custom
+  containers:
+    - name: container
+      image: busybox:latest
+      command:
+        - "/bin/sleep"
+      args:
+        - "infinity"
