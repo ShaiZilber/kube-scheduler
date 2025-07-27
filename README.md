@@ -3,14 +3,19 @@
 ## Introduction
 
 ## Steps
-### Required Steps
-1. [Schedule on hard coded node.](./docs/steps/hard_coded.md)
-2. [Schedule on random node.](./docs/steps/random_node.md)
-3. [Run inside cluster.](./docs/steps/inside_cluster.md)
+### Basic Steps - Required
+0. [Learn the API](./docs/steps/learn_the_api.md)
+1. Initial scheduling:
+   a. [Schedule a hard coded pod on a programmatically found node.](./docs/steps/programmatic_pod.md)
+   b. [Schedule a programmatically found pod on a hard coded node.](./docs/steps/programmatic_node.md)
+2. [Run inside cluster.](./docs/steps/inside_cluster.md)
 
-### Optional Advanced Steps
-1. [Schedule based on Node Selectors.](./docs/steps/node_selectors.md)
-2. [Implement `schedule_pod` function](./docs/steps/implement_schedule_pod.md)
+### Advanced Steps - Optional
+#### Synchronous
+1. [Implement `schedule_pod` function.](./docs/steps/implement_schedule_pod.md)
+
+#### Asynchronous
+2. [Schedule based on Node Selectors.](./docs/steps/node_selectors.md)
 3. [Schedule based on Node Taints and Pod Tolerations - NoSchedule.](./docs/steps/taints_and_tolerations_noschedule.md)
 4. [Schedule based on Node Affinity Required.](./docs/steps/node_affinity_required.md)
 5. [Schedule based on Node Taints and Pod Tolerations - PreferNoSchedule.](./docs/steps/taints_and_tolerations_prefernoschedule.md)
