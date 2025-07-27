@@ -1,5 +1,6 @@
 import os
 from random import choice
+from typing import Optional
 
 import kubernetes
 
@@ -18,26 +19,30 @@ def load_config():
     return configuration
 
 
-def select_node(
-        v1: kubernetes.client.CoreV1Api, pod: kubernetes.client.V1Pod
-) -> kubernetes.client.V1Node:
-    filtered_nodes = []
+def select_node(v1: kubernetes.client.CoreV1Api, pod: kubernetes.client.V1Pod) -> Optional[kubernetes.client.V1Node]:
+    tiered_nodes = [[], []]
     for node in v1.list_node().items:
         # Advanced Step 1
         if not (node_selector_filter(node, pod)):
             continue
 
         # Advanced Step 3
-        if not (tolerates(node, pod)):
+        if not (tolerates(node, pod, "NoSchedule")):
             continue
 
-        filtered_nodes.append(node)
+        # Advanced Step 5
+        if tolerates(node, pod, "PreferNoSchedule"):
+            tiered_nodes[0].append(node)
+        else:
+            tiered_nodes[1].append(node)
 
-    # if no node matches return None
-    if not filtered_nodes:
-        return None
+    for tier in tiered_nodes:
+        if len(tier) == 0:
+            continue
 
-    return choice(filtered_nodes)
+        return choice(tier)
+
+    return None
 
 
 def main():
@@ -50,25 +55,23 @@ def main():
     for event in w.stream(
             v1.list_pod_for_all_namespaces, field_selector="spec.schedulerName==custom"
     ):
-        if event["object"].spec.node_name is not None:
+        pod = event["object"]
+        if pod.spec.node_name is not None:
             continue
 
-        node = select_node(v1, event["object"])
+        node = select_node(v1, pod)
         if node is None:
-            print(f"No node matches pod: {event["object"].metadata.name}")
+            print(f"Failed to schedule pod {pod.metadata.name}.", flush=True)
             continue
 
-        print(
-            node.metadata.labels["node.id"],
-            schedule_pod(
-                pod=event["object"].metadata.name,
-                namespace=event["object"].metadata.namespace,
-                node=node.metadata.name,
-                api_url=configuration.host,
-                api_token=configuration.get_api_key_with_prefix("authorization"),
-            ).status_code,
-            flush=True,
-        )
+        result = schedule_pod(
+            pod=pod.metadata.name,
+            namespace=pod.metadata.namespace,
+            node=node.metadata.name,
+            api_url=configuration.host,
+            api_token=configuration.get_api_key_with_prefix("authorization"),
+        ).json()
+        print(f"Scheduled node with result: {result}", flush=True)
 
 
 if __name__ == "__main__":

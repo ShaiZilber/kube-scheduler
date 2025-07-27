@@ -1,17 +1,62 @@
 apiVersion: kind.x-k8s.io/v1alpha4
 kind: Cluster
-name: scheduler
+name: hogwarts
 nodes:
   - role: control-plane
-    labels:
-      node.id: node0
+    kubeadmConfigPatches:
+    - |
+      kind: InitConfiguration
+      nodeRegistration:
+        name: teachers-lounge
   - role: worker
     labels:
-      node.id: node1
+      type: house
+      house: slytherin
+    kubeadmConfigPatches:
+    - |
+      kind: JoinConfiguration
+      nodeRegistration:
+        name: slytherin
+        taints:
+          - key: house
+            value: slytherin
+            effect: NoSchedule
   - role: worker
     labels:
-      node.id: node2
+      type: house
+      house: hufflepuff
+    kubeadmConfigPatches:
+    - |
+      kind: JoinConfiguration
+      nodeRegistration:
+        name: hufflepuff
+        taints:
+          - key: house
+            value: hufflepuff
+            effect: NoSchedule
   - role: worker
     labels:
-      node.id: node3
-
+      type: house
+      house: ravenclaw
+    kubeadmConfigPatches:
+    - |
+      kind: JoinConfiguration
+      nodeRegistration:
+        name: ravenclaw
+        taints:
+          - key: house
+            value: ravenclaw
+            effect: NoSchedule
+  - role: worker
+    labels:
+      type: house
+      house: gryffindor
+    kubeadmConfigPatches:
+    - |
+      kind: JoinConfiguration
+      nodeRegistration:
+        name: gryffindor
+        taints:
+          - key: house
+            value: gryffindor
+            effect: NoSchedule

@@ -1,15 +1,20 @@
 import unittest
+from typing import Iterable
 
 from kubernetes.client import V1Node, V1Pod
 from kubernetes.client.models import V1Taint, V1Toleration
 
 
-def _tolerates(taints: list[V1Taint],
-               tolerations: list[V1Toleration]) -> bool:
+def _tolerates(taints: Iterable[V1Taint],
+               tolerations: Iterable[V1Toleration]) -> bool:
     for taint in taints:
         matched = False
         for toleration in tolerations:
-            if toleration.effect is None or toleration.effect == "" or toleration.effect == taint.effect:
+            if (toleration.effect is None or toleration.effect == "") and (
+                    toleration.key == taint.key or toleration.key is None or toleration.key == ""):
+                matched = True
+
+            if toleration.effect == taint.effect:
                 if toleration.key is None or toleration.key == "":
                     matched = True
 
@@ -21,8 +26,8 @@ def _tolerates(taints: list[V1Taint],
                             if toleration.value == taint.value:
                                 matched = True
 
-                if matched:
-                    break
+            if matched:
+                break
 
         if not matched:
             return False
@@ -30,8 +35,8 @@ def _tolerates(taints: list[V1Taint],
     return True
 
 
-def tolerates(node: V1Node, pod: V1Pod) -> bool:
-    return _tolerates(node.spec.taints, pod.spec.taints)
+def tolerates(node: V1Node, pod: V1Pod, effect: str) -> bool:
+    return _tolerates(filter(lambda taint: taint.effect == effect, node.spec.taints), pod.spec.taints)
 
 
 class TestToleratesFunction(unittest.TestCase):
