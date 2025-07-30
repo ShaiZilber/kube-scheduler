@@ -1,0 +1,83 @@
+- hosts: "{{ ansible_limit }}"
+  any_errors_fatal: true
+  tasks:
+    - command:
+        cmd: "/usr/local/sbin/kubectl get nodes"
+      become: true
+      become_user: student
+    - meta: end_play
+    - ansible.builtin.package:
+        name:
+          - docker-ce
+          - python3.11
+        state: present
+      become: true
+
+    - ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "/usr/local/sbin/{{ item.name }}"
+        owner: root
+        group: root
+        mode: "0755"
+        force: true
+      loop:
+        # this kind version is suitable for rhel 8.6-8.8 versions. if using rhel 9+ use kind v0.20+
+        # fixes kind stuck on creating control plane.
+        - name: kind
+          url: https://kind.sigs.k8s.io/dl/v0.19.0/kind-linux-amd64
+        - name: kubectl
+          url: https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/kubectl
+      become: true
+
+    - ansible.builtin.systemd_service:
+        name: docker
+        state: started
+        enabled: true
+        daemon_reload: true
+      become: true
+    # fixes kind stuck on joining worker nodes...
+    - ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+      become: true
+      loop:
+        - name: fs.inotify.max_user_watches
+          value: 655360
+        - name: fs.inotify.max_user_instances
+          value: 1280
+
+    - ansible.builtin.command:
+        cmd: "/usr/local/sbin/kind get clusters"
+      become: true
+      changed_when: false
+      register: __x_clusters
+
+    - when: "'hogwarts' not in __x_clusters.stdout_lines"
+      block:
+        - ansible.builtin.tempfile:
+            state: directory
+          register: __x_tempdir
+
+        - ansible.builtin.set_fact:
+            cluster_path: "{{ __x_tempdir.path }}/kind.yml"
+
+        - ansible.builtin.copy:
+            src: kind.yml
+            dest: "{{ cluster_path }}"
+
+        - ansible.builtin.command:
+            cmd: "/usr/local/sbin/kind create cluster --config {{ cluster_path }}"
+          become: true
+
+        - ansible.builtin.command:
+            cmd: "/usr/local/sbin/kind export kubeconfig --name hogwarts"
+          become: true
+          become_user: student
+      always:
+        - ansible.builtin.file:
+            path: "{{ __x_tempdir.path }}"
+            state: absent
+
+        - ansible.builtin.file:
+            path: "{{ cluster_path }}"
+            state: absent
