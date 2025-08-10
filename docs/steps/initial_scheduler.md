@@ -1,0 +1,1 @@
+* SHOULD use the watch object to stream the pods, instead of manually infinitely looping with timeout.

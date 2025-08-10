@@ -2,13 +2,17 @@
 
 ## Introduction
 
+## Workshop Setup
+Follow [Workshop Setup](./docs/setup_workshop.md).
+
 ## Steps
 ### Basic Steps - Required
 1. [Learn the API](./docs/steps/learn_the_api.md)
-2. Initial scheduling:
+2. Scheduling Principles:
    1. [Schedule a hard coded pod on a programmatically found node.](./docs/steps/programmatic_pod.md)
-   2. [Schedule a programmatically found pod on a hard coded node.](./docs/steps/programmatic_node.md)
-3. [Run inside cluster.](./docs/steps/inside_cluster.md)
+   2. [Schedule a programmatically found pod on a hard coded node.](./docs/steps/semi_programmatic_scheduling)
+3. [Initial Scheduler](./docs/steps/initial_scheduler.md)
+4. [Run inside cluster.](./docs/steps/inside_cluster.md)
 
 ### Advanced Steps - Optional
 #### Synchronous
