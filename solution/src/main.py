@@ -6,7 +6,7 @@ import kubernetes
 
 from schedule_pod import schedule_pod
 from solution.src.taints_and_tolerations import tolerates
-from solution.src.node_selecor import node_selector_filter
+from solution.src.node_selector import node_selector_filter
 
 
 def load_config():
@@ -19,7 +19,9 @@ def load_config():
     return configuration
 
 
-def select_node(v1: kubernetes.client.CoreV1Api, pod: kubernetes.client.V1Pod) -> Optional[kubernetes.client.V1Node]:
+def select_node(
+    v1: kubernetes.client.CoreV1Api, pod: kubernetes.client.V1Pod
+) -> Optional[kubernetes.client.V1Node]:
     tiered_nodes = [[], []]
     for node in v1.list_node().items:
         # Advanced Step 1
@@ -53,7 +55,7 @@ def main():
 
     print("Watching pods in all namespaces...", flush=True)
     for event in w.stream(
-            v1.list_pod_for_all_namespaces, field_selector="spec.schedulerName==custom"
+        v1.list_pod_for_all_namespaces, field_selector="spec.schedulerName==custom"
     ):
         pod = event["object"]
         if pod.spec.node_name is not None:

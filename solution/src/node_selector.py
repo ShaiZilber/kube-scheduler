@@ -15,7 +15,7 @@ def is_fit_node(node_labels: dict, pod_node_selector_labels: dict):
     if pod_node_selector_labels is None or not pod_node_selector_labels:
         return True
 
-    # if the node selector filed exists and there are no node labels, the node doesn't fit
+    # if the node selector field exists and there are no node labels, the node doesn't fit
     if node_labels is None or not node_labels:
         return False
 
