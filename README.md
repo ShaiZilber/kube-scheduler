@@ -3,7 +3,7 @@
 ## Introduction
 
 ## Workshop Setup
-Follow [Workshop Setup.](./docs/setup_workshop.md).
+Follow [Workshop Setup.](./docs/setup_workshop.md)
 
 ## Steps
 ### Basic Steps - Required

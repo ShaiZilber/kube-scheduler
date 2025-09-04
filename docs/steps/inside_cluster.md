@@ -8,3 +8,4 @@ Rather than running your scheduler as a standalone process with external kubecon
 * Build a container image using the provided [Containerfile](../../solution/Containerfile).
 * Create the required manifests to run the pod inside the cluster.
 * Confirm the scheduler schedule pods.
+* The deployment MUST run on the control plane nodes.
