@@ -40,4 +40,11 @@ Together, these components form a complete basic scheduler. Presented separately
 
 
 ## FAQ
+### What does the field `schedulerName` do?
+The field is an indicator for a scheduler to add the pod to its scheduling queue. 
+It is up to the scheduler to look for the scheduler name properly and only schedule pods that use his "name".
+The scheduler name is an agreement between the pod creator and the scheduler creator on what the identifier for the scheduler is.
 
+### How can i filter out scheduled pods?
+You should look at the `spec.nodeName` field. Only scheduled pods have a non-empty value for this field.
+other ways such as looking at the status of the pod or keeping track of already scheduled pods have noticeable drawbacks and are not acceptable.
