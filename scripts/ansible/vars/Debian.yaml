@@ -1,0 +1,3 @@
+packages:
+  - docker-ce
+  - python3.12
