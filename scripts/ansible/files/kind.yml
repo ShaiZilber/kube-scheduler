@@ -9,6 +9,12 @@ nodes:
       nodeRegistration:
         name: teachers-lounge
   - role: worker
+    kubeadmConfigPatches:
+    - |
+      kind: InitConfiguration
+      nodeRegistration:
+        name: great-hall
+  - role: worker
     labels:
       type: house
       house: slytherin
