@@ -1,15 +1,11 @@
 - hosts: "{{ ansible_limit }}"
   any_errors_fatal: true
   tasks:
-    - command:
-        cmd: "/usr/local/sbin/kubectl get nodes"
-      become: true
-      become_user: student
-    - meta: end_play
+    - name: Load OS-specific variables
+      ansible.builtin.include_vars: "{{ ansible_facts['os_family'] }}.yml"
+
     - ansible.builtin.package:
-        name:
-          - docker-ce
-          - python3.11
+        name: "{{ packages }}"
         state: present
       become: true
 
